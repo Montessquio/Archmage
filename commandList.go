@@ -16,7 +16,7 @@ var CommandMap = map[string]Command{
 	"roll": {
 		Name:     "roll",
 		Short:    "Roll a dice expression.",
-		Desc:     "Roll any dice or mathematical expression. The \"roll\" prefix is unnecessary.",
+		Desc:     "Roll any dice or mathematical expression. The \"roll\" prefix is unnecessary as long as the first term is some sort of die expression.",
 		Example:  "!roll [expr], !roll 3d6+(1d4/2), !3d6+(1d4/2)",
 		Callback: RollHandler,
 	},

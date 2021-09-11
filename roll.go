@@ -38,12 +38,16 @@ func RollHandler(s *discordgo.Session, m *discordgo.MessageCreate, args []string
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Error: %s", err.Error()))
 	}
 
+	// Assemble the AST
 	expr := parser.Expr()
 	if len(parser.errors) != 0 {
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Errs: %v\n", parser.errors))
 	}
 
+	// Walk and Resolve the AST
 	result, work := expr.Eval()
+
+	// Send a nice stylish message.
 	embed := &discordgo.MessageEmbed{
 		Author:      &discordgo.MessageEmbedAuthor{},
 		Color:       0x00ff00, // Green
@@ -61,7 +65,7 @@ func RollHandler(s *discordgo.Session, m *discordgo.MessageCreate, args []string
 			},
 		},
 		Timestamp: time.Now().Format(time.RFC3339), // Discord wants ISO8601; RFC3339 is an extension of ISO8601 and should be completely compatible.
-		Title:     m.Author.Username + "#" + m.Author.Discriminator + " Rolled",
+		Title:     m.Author.Username + "#" + m.Author.Discriminator + " Rolled " + strconv.Itoa(result),
 	}
 	s.ChannelMessageSendEmbed(m.ChannelID, embed)
 }
@@ -357,7 +361,7 @@ func (t AstDie) Eval() (int, string) {
 	rolls := make([]int, t.left)
 	for i := range rolls {
 		//out[i] = rand.Intn(max-min+1) + min
-		rolls[i] = rand.Intn(int(t.right) + 1)
+		rolls[i] = rand.Intn(int(t.right)) + 1
 		sb.WriteString(strconv.Itoa(rolls[i]))
 		if i != (len(rolls) - 1) {
 			sb.WriteString(", ")

@@ -58,6 +58,7 @@ func main() {
 
 // Precompiled regex for speed and safety.
 var argRegex *regexp.Regexp = regexp.MustCompile(`[^\s"']+|("[^"]*")|('[^']*')`)
+var diceExprRegex *regexp.Regexp = regexp.MustCompile(`^\(*\d*d\d+`)
 
 // Recieves a discord message, determines if it is a command,
 // processes its arguments and runs the associated command function.
@@ -80,6 +81,12 @@ func ProcessMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 	// resolve having help refer to the struct its callback is stored in.
 	if args[0] == "help" {
 		HelpHandler(s, m, args)
+		return
+	}
+
+	// Handle the special ![diceexpr] condition.
+	if diceExprRegex.MatchString(args[0]) {
+		RollHandler(s, m, args)
 		return
 	}
 
